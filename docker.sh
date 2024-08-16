@@ -20,6 +20,8 @@ sudo systemctl enable docker
 
 # 현재 사용자를 Docker 그룹에 추가
 sudo usermod -aG docker $USER
+sudo usermod -aG docker ubuntu
+sudo usermod -aG docker jenkins
 
 # Docker Compose 설치
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose

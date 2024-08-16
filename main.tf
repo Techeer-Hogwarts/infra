@@ -32,13 +32,23 @@ resource "google_compute_address" "static_ip2" {
     region = "us-central1"
 }
 
+resource "google_compute_address" "static_ip3" {
+    name   = "hogwarts-monitoring-static-ip"
+    region = "us-central1"
+}
+
 resource "google_compute_firewall" "main-ssh-icmp" {
     name    = "main-ssh-icmp"
     network = google_compute_network.vpc_network.name
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "80", "443", "8000"]  # SSH port
+        ports    = ["22", "80", "443", "8000", "9000", "2377", "7946"]  # SSH port
+    }
+
+    allow {
+        protocol = "udp"
+        ports = ["4789","7946"]
     }
 
     allow {
@@ -55,7 +65,12 @@ resource "google_compute_firewall" "jenkins-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "80", "443", "8000"]  # SSH port
+        ports    = ["22", "80", "443", "8000", "7946"]  # SSH port
+    }
+
+    allow {
+        protocol = "udp"
+        ports = ["4789","7946"]
     }
 
     allow {
@@ -64,6 +79,28 @@ resource "google_compute_firewall" "jenkins-ssh-icmp" {
 
     source_ranges = ["0.0.0.0/0"]
     target_tags = ["jenkins-firewall"]
+}
+
+resource "google_compute_firewall" "monitoring-ssh-icmp" {
+    name    = "monitoring-ssh-icmp"
+    network = google_compute_network.vpc_network.name
+
+    allow {
+        protocol = "tcp"
+        ports    = ["22", "80", "443", "8000", "3000", "7946"]  # SSH port
+    }
+
+    allow {
+        protocol = "udp"
+        ports = ["4789", "7946"]
+    }
+
+    allow {
+        protocol = "icmp"
+    }
+
+    source_ranges = ["0.0.0.0/0"]
+    target_tags = ["monitoring-firewall"]
 }
 
 # 백엔드 메인 서버 
@@ -117,6 +154,35 @@ resource "google_compute_instance" "vm_instance2" {
     }
 
     tags = ["http-server", "https-server", "jenkins-firewall"]
+
+    metadata = {
+        ssh-keys = "ubuntu:${var.ssh_key}"
+        startup-script = file("~/Documents/Hogwarts/infra/docker.sh")
+    }
+}
+
+# 모니터링 서버
+resource "google_compute_instance" "vm_instance3" {
+    name         = "hogwarts-monitoring-instance"
+    machine_type = "e2-small"  # 2 vCPUs, 2GB memory
+    zone         = "us-central1-c"
+
+    boot_disk {
+    initialize_params {
+        image  = "ubuntu-os-cloud/ubuntu-2004-lts"
+        size   = 25  # 25 GB disk size
+        type   = "pd-balanced"
+        }
+    }
+
+    network_interface {
+        subnetwork = google_compute_subnetwork.subnet.id
+        access_config {
+            nat_ip = google_compute_address.static_ip3.address
+        }
+    }
+
+    tags = ["http-server", "https-server", "monitoring-firewall"]
 
     metadata = {
         ssh-keys = "ubuntu:${var.ssh_key}"
