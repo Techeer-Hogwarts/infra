@@ -106,8 +106,9 @@ resource "google_compute_firewall" "monitoring-ssh-icmp" {
 # 백엔드 메인 서버 
 resource "google_compute_instance" "vm_instance1" {
     name         = "hogwarts-main-instance"
-    machine_type = "n2-standard-2"  # 2 vCPUs, 8GB memory
+    machine_type = "e2-medium"  # 2 vCPUs, 4GB memory
     zone         = "us-central1-c"
+    allow_stopping_for_update = true
 
     boot_disk {
     initialize_params {
