@@ -43,7 +43,7 @@ resource "google_compute_firewall" "main-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "80", "443", "9000", "2377", "7946", "9090", "3000", "8080"]  # SSH port
+        ports    = ["22", "80", "443", "9000", "2377", "7946", "9090", "3000", "8080", "8090"]  # SSH port
     }
 
     allow {
