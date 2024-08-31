@@ -43,7 +43,7 @@ resource "google_compute_firewall" "main-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "80", "443", "9000", "2377", "7946", "9090", "3000", "8080", "8090"]  # SSH port
+        ports    = ["22", "443", "2377", "7946"]  # SSH port
     }
 
     allow {
@@ -65,12 +65,7 @@ resource "google_compute_firewall" "jenkins-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "80", "443", "8000", "7946"]  # SSH port
-    }
-
-    allow {
-        protocol = "udp"
-        ports = ["4789","7946"]
+        ports    = ["22", "80", "443", "8000"]  # SSH port
     }
 
     allow {
@@ -87,7 +82,7 @@ resource "google_compute_firewall" "monitoring-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "80", "443", "7946"]  # SSH port
+        ports    = ["22", "443", "7946"]  # SSH port
     }
 
     allow {
