@@ -128,7 +128,7 @@ resource "google_compute_firewall" "parsing-ssh-icmp" {
     }
 
     source_ranges = ["0.0.0.0/0"]
-    target_tags = ["crawling-firewall"]
+    target_tags = ["parsing-firewall"]
 }
 
 # 백엔드 메인 서버 
