@@ -281,8 +281,13 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_range.name]
 }
+# 🔹 Cloud SQL의 외부 고정 IP 예약
+resource "google_compute_address" "hogwarts_sql_static_ip" {
+  name   = "hogwarts-sql-static-ip"
+  region = "us-central1"
+}
 
-# PostgreSQL Cloud SQL 설정
+# 🔹 PostgreSQL Cloud SQL 인스턴스 설정 (Static IP 사용)
 resource "google_sql_database_instance" "hogwarts_postgres" {
   name                = var.db_name
   project             = var.project_id
@@ -305,9 +310,10 @@ resource "google_sql_database_instance" "hogwarts_postgres" {
       ipv4_enabled    = true
       private_network = google_compute_network.vpc_network.id
       
+      # 🔹 고정 외부 IP 연결
       authorized_networks {
         name  = "allowed-network"
-        value = "0.0.0.0/0"  # 외부 접근 허용 범위 설정 (특정 IP로 제한 가능)
+        value = google_compute_address.hogwarts_sql_static_ip.address  # Static IP 적용
       }
     }
 
@@ -322,6 +328,7 @@ resource "google_sql_database_instance" "hogwarts_postgres" {
     }
   }
 }
+
 
 // 데이터베이스 사용자 설정
 resource "google_sql_user" "db_user" {
