@@ -61,12 +61,7 @@ resource "google_compute_firewall" "main-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "443", "2377", "7946"]  # SSH port
-    }
-
-    allow {
-        protocol = "udp"
-        ports = ["4789","7946"]
+        ports    = ["443"]  # SSH port
     }
 
     allow {
@@ -83,12 +78,7 @@ resource "google_compute_firewall" "monitoring-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "443", "7946"]  # SSH port
-    }
-
-    allow {
-        protocol = "udp"
-        ports = ["4789", "7946"]
+        ports    = ["443"]  # SSH port
     }
 
     allow {
@@ -105,12 +95,7 @@ resource "google_compute_firewall" "crawling-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "443", "7946"]  # SSH port
-    }
-
-    allow {
-        protocol = "udp"
-        ports = ["4789", "7946"]
+        ports    = ["443"]  # SSH port
     }
 
     allow {
@@ -127,12 +112,7 @@ resource "google_compute_firewall" "parsing-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "443", "7946"]  # SSH port
-    }
-
-    allow {
-        protocol = "udp"
-        ports = ["4789", "7946"]
+        ports    = ["443"]  # SSH port
     }
 
     allow {
@@ -323,7 +303,7 @@ resource "google_sql_database_instance" "hogwarts_postgres" {
 
     ip_configuration {
       ipv4_enabled    = true
-      private_network = google_compute_network.vpc_network.self_link
+      private_network = google_compute_network.vpc_network.id
       
       authorized_networks {
         name  = "allowed-network"
@@ -348,4 +328,6 @@ resource "google_sql_user" "db_user" {
   name     = var.db_user_name
   password = var.db_user_password
   instance = google_sql_database_instance.hogwarts_postgres.name
+
+  depends_on = [google_sql_database_instance.hogwarts_postgres]
 }
