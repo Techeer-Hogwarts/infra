@@ -31,4 +31,4 @@ sudo chmod +x /usr/local/bin/docker-compose
 docker --version
 docker-compose --version
 
-echo "Docker 및 Docker Compose 설치 완료.”
+echo "Docker 및 Docker Compose 설치 완료."
